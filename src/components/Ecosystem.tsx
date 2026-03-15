@@ -9,14 +9,6 @@ export default function Ecosystem() {
     <section id="ecosystem" className="py-32 relative">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border border-purple-500/30 text-purple-400 text-xs font-medium tracking-wide uppercase mb-6"
-          >
-            GitHub for AI Agents
-          </motion.div>
           <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-6">
             {t('ecosystem.title')}
           </h2>
@@ -43,10 +35,10 @@ export default function Ecosystem() {
             <div className="mt-auto bg-black/40 rounded-2xl border border-white/10 p-4 relative z-10">
               <div className="flex gap-4 items-center mb-4">
                 <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center">
-                  <span className="text-white font-bold">VI</span>
+                  <span className="text-white font-bold">SK</span>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-white">Brand Generator</div>
+                  <div className="text-sm font-medium text-white">Skill Marketplace</div>
                   <div className="text-xs text-zinc-500">by @design_geek</div>
                 </div>
                 <div className="ml-auto px-3 py-1 rounded-full bg-white/10 text-xs text-white">

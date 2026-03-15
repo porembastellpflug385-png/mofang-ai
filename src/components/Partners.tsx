@@ -5,14 +5,15 @@ export default function Partners() {
   const { t } = useLanguage();
 
   const partners = [
-    '腾讯',
-    '华为',
-    '字节跳动',
-    '亚一黄金',
-    '老庙黄金',
-    '京东',
-    '来伊份',
-    '海尔',
+    'OpenAI',
+    'Anthropic',
+    'Google',
+    'DeepSeek',
+    'ByteDance',
+    'Tencent',
+    'Bailian',
+    'Grok',
+    'Moonshot',
   ];
 
   return (
@@ -21,23 +22,21 @@ export default function Partners() {
         <p className="text-sm font-medium text-zinc-500 uppercase tracking-widest">{t('partners.title')}</p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {partners.map((partner, idx) => (
-            <motion.div
-              key={partner}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.06 }}
-              className="rounded-3xl border border-white/8 bg-white/[0.02] px-4 py-8 md:py-10 flex items-center justify-center"
-            >
-              <div className="text-white/90 text-2xl md:text-3xl font-semibold tracking-tight text-center">
-                {partner}
-              </div>
-            </motion.div>
+      <div className="relative flex overflow-x-hidden">
+        <div className="absolute top-0 bottom-0 left-0 w-32 bg-gradient-to-r from-[#050505] to-transparent z-10" />
+        <div className="absolute top-0 bottom-0 right-0 w-32 bg-gradient-to-l from-[#050505] to-transparent z-10" />
+
+        <motion.div
+          className="flex whitespace-nowrap items-center gap-16 px-8"
+          animate={{ x: ['0%', '-50%'] }}
+          transition={{ repeat: Infinity, ease: 'linear', duration: 28 }}
+        >
+          {[...partners, ...partners].map((partner, idx) => (
+            <div key={`${partner}-${idx}`} className="text-2xl md:text-3xl font-semibold text-zinc-700 tracking-tight">
+              {partner}
+            </div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

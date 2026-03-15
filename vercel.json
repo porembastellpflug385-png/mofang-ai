@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/contact",
+      "destination": "/api/contact.ts"
+    },
+    {
+      "source": "/api/chat",
+      "destination": "/api/chat.ts"
+    },
+    {
+      "source": "/api/micro-skill",
+      "destination": "/api/micro-skill.ts"
+    },
+    {
+      "source": "/api/share-track",
+      "destination": "/api/share-track.ts"
+    }
+  ]
+}

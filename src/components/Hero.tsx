@@ -2,7 +2,7 @@ import { motion } from 'motion/react';
 import { ChevronRight, Play } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-export default function Hero() {
+export default function Hero({ onOpenMicroSkill }: { onOpenMicroSkill: () => void }) {
   const { t } = useLanguage();
 
   return (
@@ -39,10 +39,10 @@ export default function Hero() {
           <a href="#contact" className="bg-white text-black px-8 py-4 rounded-full font-medium flex items-center gap-2 hover:scale-105 transition-transform cursor-pointer">
             {t('hero.deploy')} <ChevronRight className="w-4 h-4" />
           </a>
-          <a href="#showcase" className="glass px-8 py-4 rounded-full font-medium hover:bg-white/10 transition-colors cursor-pointer flex items-center gap-2 border border-cyan-500/30">
+          <button onClick={onOpenMicroSkill} className="glass px-8 py-4 rounded-full font-medium hover:bg-white/10 transition-colors cursor-pointer flex items-center gap-2 border border-cyan-500/30">
             <Play className="w-4 h-4 text-cyan-400" />
             {t('hero.docs')}
-          </a>
+          </button>
         </motion.div>
       </div>
     </section>

@@ -7,6 +7,15 @@ type ChatItem = {
   content: string;
 };
 
+async function readJsonResponse<T>(response: Response): Promise<T> {
+  const text = await response.text();
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(text.startsWith('<') ? '接口暂时不可用，请检查后端部署或稍后重试。' : text || 'Invalid server response.');
+  }
+}
+
 export default function SmartChatWidget({ onNewMessage }: { onNewMessage?: () => Promise<void> | void }) {
   const { t } = useLanguage();
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -40,12 +49,12 @@ export default function SmartChatWidget({ onNewMessage }: { onNewMessage?: () =>
         }),
       });
 
-      const result = (await response.json()) as {
+      const result = await readJsonResponse<{
         ok: boolean;
         conversationId: string;
         reply: string;
         needsHuman?: boolean;
-      };
+      }>(response);
 
       if (!response.ok || !result.ok) {
         throw new Error('Chat failed');
@@ -68,16 +77,16 @@ export default function SmartChatWidget({ onNewMessage }: { onNewMessage?: () =>
   };
 
   return (
-    <div className="glass-panel rounded-[2rem] p-6 md:p-8">
+    <div className="glass-panel rounded-[2rem] p-6 md:p-8 h-full min-h-[920px] flex flex-col">
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-          <Bot className="w-6 h-6 text-cyan-300" />
+        <div className="w-20 h-20 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center shadow-[0_0_40px_rgba(34,211,238,0.12)]">
+          <Bot className="w-10 h-10 text-cyan-300" />
         </div>
-        <h3 className="text-2xl font-semibold">{t('ops.chatTitle')}</h3>
+        <h3 className="text-4xl md:text-5xl font-semibold tracking-tight">{t('ops.chatTitle')}</h3>
       </div>
       <p className="text-zinc-400 mb-6">{t('ops.chatDesc')}</p>
 
-      <div className="space-y-3 rounded-[1.5rem] border border-white/10 bg-black/30 p-4 h-[24rem] md:h-[26rem] overflow-auto">
+      <div className="space-y-3 rounded-[1.5rem] border border-white/10 bg-black/30 p-4 flex-1 min-h-[540px] overflow-auto">
         {messages.map((item, index) => (
           <div
             key={`${item.role}-${index}`}
