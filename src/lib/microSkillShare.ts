@@ -1,4 +1,5 @@
 export type ShareableCardData = {
+  template?: 'tech-noir' | 'executive-minimal' | 'fashion-editorial';
   name: string | null;
   title: string | null;
   company: string | null;
@@ -6,6 +7,12 @@ export type ShareableCardData = {
   email: string | null;
   social: string | null;
   insight: string;
+  tagline?: string | null;
+  motif?: string | null;
+  typographyTone?: 'precision' | 'editorial' | 'monument';
+  spacingDensity?: 'compact' | 'balanced' | 'airy';
+  ornamentLevel?: 'subtle' | 'medium' | 'expressive';
+  compositionType?: 'split' | 'stacked' | 'asymmetrical';
   confidence: number;
   themeMode: 'dark' | 'light';
   primaryColor: string;

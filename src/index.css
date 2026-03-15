@@ -55,21 +55,5 @@ body {
 
 .cube-wireframe {
   color: #67e8f9;
-  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.4));
-  animation: cube-pulse 6s linear infinite;
-}
-
-@keyframes cube-pulse {
-  0% {
-    color: #67e8f9;
-  }
-  33% {
-    color: #c084fc;
-  }
-  66% {
-    color: #f9a8d4;
-  }
-  100% {
-    color: #67e8f9;
-  }
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.28));
 }
