@@ -14,25 +14,17 @@ import Vision from './components/Vision';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import AdminPage from './components/AdminPage';
-import MicroSkillSandbox from './components/MicroSkillSandbox';
-import SharedCardPage from './components/SharedCardPage';
 import { LanguageProvider } from './context/LanguageContext';
 import { useEffect, useState } from 'react';
 
 function RoutedApp() {
   const [route, setRoute] = useState(() => window.location.hash || '#/');
-  const [microSkillOpen, setMicroSkillOpen] = useState(false);
 
   useEffect(() => {
     const handleHashChange = () => setRoute(window.location.hash || '#/');
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
-
-  if (route.startsWith('#/card/')) {
-    const payload = route.replace('#/card/', '');
-    return <SharedCardPage payload={payload} />;
-  }
 
   if (route === '#/admin') {
     return <AdminPage />;
@@ -42,7 +34,7 @@ function RoutedApp() {
     <div className="min-h-screen bg-[#050505] text-white selection:bg-cyan-500/30">
       <Navbar />
       <main>
-        <Hero onOpenMicroSkill={() => setMicroSkillOpen(true)} />
+        <Hero />
         <Introduction />
         <SkillsPlatform />
         <Showcase />
@@ -52,7 +44,6 @@ function RoutedApp() {
         <Contact />
       </main>
       <Footer />
-      <MicroSkillSandbox open={microSkillOpen} onClose={() => setMicroSkillOpen(false)} />
     </div>
   );
 }

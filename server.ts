@@ -8,7 +8,6 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import crypto from 'node:crypto';
-import { generateMicroSkillCard } from './lib/micro-skill-engine';
 
 type AssetRecord = {
   id: string;
@@ -48,15 +47,6 @@ type ChatConversation = {
   turns: ChatTurn[];
 };
 
-type ShareEventRecord = {
-  id: string;
-  cardId: string;
-  action: string;
-  name?: string;
-  title?: string;
-  createdAt: string;
-};
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = __dirname;
@@ -65,7 +55,6 @@ const uploadsDir = path.join(rootDir, 'uploads');
 const assetsFile = path.join(dataDir, 'assets.json');
 const inboxFile = path.join(dataDir, 'messages.json');
 const chatsFile = path.join(dataDir, 'chats.json');
-const shareEventsFile = path.join(dataDir, 'share-events.json');
 const publicAppUrl = process.env.PUBLIC_APP_URL || 'http://localhost:3000';
 const storageProvider = process.env.STORAGE_PROVIDER === 's3' ? 's3' : 'local';
 const adminUsername = 'kevin';
@@ -90,7 +79,6 @@ async function ensureStorage() {
   await ensureJsonFile<AssetRecord[]>(assetsFile, []);
   await ensureJsonFile<InboxRecord[]>(inboxFile, []);
   await ensureJsonFile<ChatConversation[]>(chatsFile, []);
-  await ensureJsonFile<ShareEventRecord[]>(shareEventsFile, []);
 }
 
 async function ensureJsonFile<T>(filePath: string, initialValue: T) {
@@ -341,11 +329,6 @@ app.get('/api/admin/messages', requireAdmin, async (_request, response) => {
   response.json({ items });
 });
 
-app.get('/api/admin/share-events', requireAdmin, async (_request, response) => {
-  const items = await readJson<ShareEventRecord[]>(shareEventsFile);
-  response.json({ items });
-});
-
 app.post('/api/admin/upload', requireAdmin, upload.array('files', 12), async (request, response) => {
   const files = request.files as Express.Multer.File[] | undefined;
   if (!files?.length) {
@@ -534,54 +517,6 @@ app.post('/api/chat', async (request, response) => {
 
   await writeJson(chatsFile, chats);
   response.json({ ok: true, conversationId: conversation.id, reply, needsHuman: needHuman });
-});
-
-app.post('/api/micro-skill', async (request, response) => {
-  const { prompt, imageColor, imageDataUrl } = request.body as { prompt?: string; imageColor?: string | null; imageDataUrl?: string | null };
-  if (!prompt?.trim()) {
-    response.status(400).json({ ok: false, message: 'prompt is required.' });
-    return;
-  }
-
-  try {
-    const card = await generateMicroSkillCard({
-      prompt: prompt.trim(),
-      imageColor: imageColor || null,
-      imageDataUrl: imageDataUrl || null,
-    });
-    response.json({ ok: true, card });
-  } catch (error) {
-    response.status(500).json({
-      ok: false,
-      message: error instanceof Error ? error.message : 'Micro-skill generation failed.',
-    });
-  }
-});
-
-app.post('/api/share-track', async (request, response) => {
-  const { cardId, action, name, title } = request.body as {
-    cardId?: string;
-    action?: string;
-    name?: string;
-    title?: string;
-  };
-
-  if (!cardId || !action) {
-    response.status(400).json({ ok: false, message: 'cardId and action are required.' });
-    return;
-  }
-
-  const items = await readJson<ShareEventRecord[]>(shareEventsFile);
-  items.unshift({
-    id: crypto.randomUUID(),
-    cardId,
-    action,
-    name,
-    title,
-    createdAt: new Date().toISOString(),
-  });
-  await writeJson(shareEventsFile, items);
-  response.json({ ok: true });
 });
 
 ensureStorage()

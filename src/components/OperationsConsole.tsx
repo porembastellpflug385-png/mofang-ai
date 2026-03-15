@@ -27,15 +27,6 @@ type InboxItem = {
   summary?: string;
 };
 
-type ShareEventItem = {
-  id: string;
-  cardId: string;
-  action: string;
-  name?: string;
-  title?: string;
-  createdAt: string;
-};
-
 export default function OperationsConsole() {
   const { t } = useLanguage();
   const [isAuthenticated, setIsAuthenticated] = useState(Boolean(getAdminToken()));
@@ -43,7 +34,6 @@ export default function OperationsConsole() {
   const [inbox, setInbox] = useState<InboxItem[]>([]);
   const [activeInboxTab, setActiveInboxTab] = useState<'leads' | 'chat'>('leads');
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const [shareEvents, setShareEvents] = useState<ShareEventItem[]>([]);
   const [uploadState, setUploadState] = useState('');
   const [mailState, setMailState] = useState('');
   const [authState, setAuthState] = useState('');
@@ -60,7 +50,6 @@ export default function OperationsConsole() {
       adminFetch('/api/admin/assets'),
       adminFetch('/api/admin/messages'),
     ]);
-    const shareResponse = await adminFetch('/api/admin/share-events');
 
     if (assetsResponse.status === 401 || inboxResponse.status === 401) {
       setIsAuthenticated(false);
@@ -79,11 +68,6 @@ export default function OperationsConsole() {
     if (inboxResponse.ok) {
       const inboxData = (await inboxResponse.json()) as { items: InboxItem[] };
       setInbox(inboxData.items);
-    }
-
-    if (shareResponse.ok) {
-      const shareData = (await shareResponse.json()) as { items: ShareEventItem[] };
-      setShareEvents(shareData.items);
     }
   };
 
@@ -347,29 +331,6 @@ export default function OperationsConsole() {
               </div>
             </div>
 
-            <div className="glass-panel rounded-[2rem] p-8">
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <h3 className="text-2xl font-semibold">{t('ops.shareTitle')}</h3>
-                <span className="text-sm text-zinc-500">{shareEvents.length} events</span>
-              </div>
-              <p className="text-zinc-400 mb-6">{t('ops.shareDesc')}</p>
-              <div className="space-y-3 max-h-[20rem] overflow-auto pr-1">
-                {shareEvents.length ? (
-                  shareEvents.map((item) => (
-                    <div key={item.id} className="rounded-2xl border border-white/10 bg-black/30 px-4 py-4">
-                      <div className="flex items-center justify-between gap-3 text-sm">
-                        <p className="font-medium text-white">{item.name || item.cardId}</p>
-                        <span className="text-zinc-500">{new Date(item.createdAt).toLocaleString()}</span>
-                      </div>
-                      <p className="mt-2 text-cyan-300 text-sm">{item.action}</p>
-                      {item.title ? <p className="mt-2 text-zinc-400">{item.title}</p> : null}
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-zinc-500">{t('ops.shareEmpty')}</p>
-                )}
-              </div>
-            </div>
           </motion.div>
           </div>
         ) : null}
