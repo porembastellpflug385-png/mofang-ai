@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Globe, Shield } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import AnimatedCubeLogo from './AnimatedCubeLogo';
 
@@ -26,15 +26,6 @@ export default function Navbar({ isAdminView = false }: { isAdminView?: boolean 
           <a href="#vision" className="hover:text-white transition-colors">{t('nav.vision')}</a>
         </div>
         <div className="flex items-center gap-2 md:gap-4 shrink-0">
-          {!isAdminView ? (
-            <a
-              href="#/admin"
-              className="hidden md:inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-white transition-colors px-3 py-1.5 border border-white/10 rounded-full bg-white/5"
-            >
-              <Shield className="w-3.5 h-3.5" />
-              {t('nav.admin')}
-            </a>
-          ) : null}
           <button 
             onClick={toggleLang}
             className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-white transition-colors px-3 py-1.5 border border-white/10 rounded-full bg-white/5 cursor-pointer"
@@ -42,9 +33,11 @@ export default function Navbar({ isAdminView = false }: { isAdminView?: boolean 
             <Globe className="w-3.5 h-3.5" />
             {lang === 'en' ? '中文' : 'EN'}
           </button>
-          <a href={isAdminView ? '#/' : '#contact'} className="bg-white text-black px-5 md:px-4 py-2.5 md:py-2 rounded-full text-sm font-medium hover:bg-zinc-200 transition-colors cursor-pointer whitespace-nowrap">
-            {isAdminView ? t('nav.home') : t('nav.init')}
-          </a>
+          {isAdminView ? (
+            <a href="#/" className="bg-white text-black px-5 md:px-4 py-2.5 md:py-2 rounded-full text-sm font-medium hover:bg-zinc-200 transition-colors cursor-pointer whitespace-nowrap">
+              {t('nav.home')}
+            </a>
+          ) : null}
         </div>
       </div>
     </motion.nav>

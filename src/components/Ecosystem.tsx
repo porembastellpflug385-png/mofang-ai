@@ -46,7 +46,7 @@ export default function Ecosystem() {
                   <span className="text-white font-bold">VI</span>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-white">Brand VI Generator</div>
+                  <div className="text-sm font-medium text-white">Brand Generator</div>
                   <div className="text-xs text-zinc-500">by @design_geek</div>
                 </div>
                 <div className="ml-auto px-3 py-1 rounded-full bg-white/10 text-xs text-white">

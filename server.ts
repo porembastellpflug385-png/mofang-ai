@@ -28,6 +28,8 @@ type InboxRecord = {
   email?: string;
   message: string;
   createdAt: string;
+  needsHuman?: boolean;
+  summary?: string;
 };
 
 type ChatTurn = {
@@ -55,9 +57,10 @@ const inboxFile = path.join(dataDir, 'messages.json');
 const chatsFile = path.join(dataDir, 'chats.json');
 const publicAppUrl = process.env.PUBLIC_APP_URL || 'http://localhost:3000';
 const storageProvider = process.env.STORAGE_PROVIDER === 's3' ? 's3' : 'local';
-const adminUsername = process.env.ADMIN_USERNAME || 'admin';
-const adminPassword = process.env.ADMIN_PASSWORD || 'change_this_password';
-const adminSessionSecret = process.env.ADMIN_SESSION_SECRET || 'change_this_session_secret';
+const adminUsername = 'kevin';
+const adminPassword = 'Nowwhat7';
+const adminSessionSecret = process.env.ADMIN_SESSION_SECRET || 'kevin-only-admin-session-secret';
+const humanKeywords = ['人工', '真人', '人工客服', 'real person', 'stall'];
 
 const app = express();
 const port = Number(process.env.PORT || 3001);
@@ -226,7 +229,57 @@ async function persistUpload(file: Express.Multer.File) {
   };
 }
 
+function requiresHuman(message: string) {
+  const normalized = message.toLowerCase();
+  return humanKeywords.some((keyword) => normalized.includes(keyword.toLowerCase()));
+}
+
+async function analyzeImageAsset(asset: AssetRecord) {
+  if (!asset.mimeType.startsWith('image/')) {
+    throw new Error('Only image files can be analyzed.');
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return '已完成基础图片分析：建议从主体内容、色彩层级、品牌露出和转化信息四个维度进行复核。配置模型密钥后可获得更详细的 AI 分析。';
+  }
+
+  let imageBuffer: Buffer;
+  if (asset.storage === 'local') {
+    imageBuffer = await fs.readFile(path.join(uploadsDir, asset.storedName));
+  } else {
+    const response = await fetch(asset.url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch the image asset for analysis.');
+    }
+    imageBuffer = Buffer.from(await response.arrayBuffer());
+  }
+
+  const client = new GoogleGenAI({ apiKey });
+  const response = await client.models.generateContent({
+    model: 'gemini-2.5-flash',
+    contents: [
+      {
+        text: '请用中文对这张图片做简洁但专业的分析，包含主体内容、视觉风格、品牌感、适合作为官网素材的建议，每项一句到两句。',
+      },
+      {
+        inlineData: {
+          mimeType: asset.mimeType,
+          data: imageBuffer.toString('base64'),
+        },
+      },
+    ],
+  });
+
+  return response.text || '分析已完成，但未返回详细文本。';
+}
+
 async function generateAssistantReply(message: string, history: ChatTurn[]) {
+  const needHuman = requiresHuman(message);
+  if (needHuman) {
+    return '已为您切换到人工客服优先队列，后台会立即收到提醒。为了更快处理，请补充您的邮箱、公司名称和核心需求。';
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return `已收到您的需求：“${message}”。我们建议先确认业务目标、所需上传资料类型，以及是否需要邮件通知和智能客服联动。`;
@@ -328,6 +381,28 @@ app.post('/api/admin/send-email', requireAdmin, async (request, response) => {
   }
 });
 
+app.post('/api/admin/analyze-image', requireAdmin, async (request, response) => {
+  const { assetId } = request.body as { assetId?: string };
+  if (!assetId) {
+    response.status(400).json({ ok: false, message: 'assetId is required.' });
+    return;
+  }
+
+  try {
+    const assets = await readJson<AssetRecord[]>(assetsFile);
+    const asset = assets.find((item) => item.id === assetId);
+    if (!asset) {
+      response.status(404).json({ ok: false, message: 'Asset not found.' });
+      return;
+    }
+
+    const analysis = await analyzeImageAsset(asset);
+    response.json({ ok: true, analysis });
+  } catch (error) {
+    response.status(500).json({ ok: false, message: error instanceof Error ? error.message : 'Image analysis failed.' });
+  }
+});
+
 app.post('/api/contact', async (request, response) => {
   const { name, company, email, message } = request.body as {
     name?: string;
@@ -349,6 +424,7 @@ app.post('/api/contact', async (request, response) => {
     email,
     message,
     createdAt: new Date().toISOString(),
+    needsHuman: false,
   };
 
   await appendInboxItem(record);
@@ -382,6 +458,8 @@ app.post('/api/chat', async (request, response) => {
     response.status(400).json({ ok: false, message: 'Message is required.' });
     return;
   }
+  const trimmedMessage = message.trim();
+  const needHuman = requiresHuman(trimmedMessage);
 
   const chats = await readJson<ChatConversation[]>(chatsFile);
   let conversation = chats.find((item) => item.id === conversationId);
@@ -400,7 +478,7 @@ app.post('/api/chat', async (request, response) => {
 
   conversation.turns.push({
     role: 'user',
-    content: message.trim(),
+    content: trimmedMessage,
     createdAt: new Date().toISOString(),
   });
   conversation.updatedAt = new Date().toISOString();
@@ -410,8 +488,10 @@ app.post('/api/chat', async (request, response) => {
     type: 'chat',
     name,
     email,
-    message: message.trim(),
+    message: trimmedMessage,
     createdAt: new Date().toISOString(),
+    needsHuman: needHuman,
+    summary: needHuman ? 'Visitor requested a human handoff.' : 'General AI support conversation.',
   });
 
   const recipient = process.env.CONTACT_RECEIVER_EMAIL;
@@ -419,15 +499,15 @@ app.post('/api/chat', async (request, response) => {
     try {
       await sendEmail({
         to: recipient,
-        subject: 'New MOFANG AI chat message',
-        text: `Conversation: ${conversation.id}\nVisitor: ${name || email || 'anonymous'}\n\n${message.trim()}`,
+        subject: needHuman ? 'Urgent: MOFANG AI human-support request' : 'New MOFANG AI chat message',
+        text: `Conversation: ${conversation.id}\nVisitor: ${name || email || 'anonymous'}\nNeeds human: ${needHuman ? 'Yes' : 'No'}\n\n${trimmedMessage}`,
       });
     } catch {
       // Keep chat available even if notification email fails.
     }
   }
 
-  const reply = await generateAssistantReply(message.trim(), conversation.turns);
+  const reply = await generateAssistantReply(trimmedMessage, conversation.turns);
   conversation.turns.push({
     role: 'assistant',
     content: reply,
@@ -436,7 +516,7 @@ app.post('/api/chat', async (request, response) => {
   conversation.updatedAt = new Date().toISOString();
 
   await writeJson(chatsFile, chats);
-  response.json({ ok: true, conversationId: conversation.id, reply });
+  response.json({ ok: true, conversationId: conversation.id, reply, needsHuman: needHuman });
 });
 
 ensureStorage()

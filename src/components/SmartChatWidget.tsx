@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { Bot, SendHorizonal, Sparkles } from 'lucide-react';
+import { Bot, SendHorizonal } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 type ChatItem = {
@@ -44,6 +44,7 @@ export default function SmartChatWidget({ onNewMessage }: { onNewMessage?: () =>
         ok: boolean;
         conversationId: string;
         reply: string;
+        needsHuman?: boolean;
       };
 
       if (!response.ok || !result.ok) {
@@ -69,7 +70,9 @@ export default function SmartChatWidget({ onNewMessage }: { onNewMessage?: () =>
   return (
     <div className="glass-panel rounded-[2rem] p-6 md:p-8">
       <div className="flex items-center gap-3 mb-3">
-        <Bot className="w-5 h-5 text-cyan-300" />
+        <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+          <Bot className="w-6 h-6 text-cyan-300" />
+        </div>
         <h3 className="text-2xl font-semibold">{t('ops.chatTitle')}</h3>
       </div>
       <p className="text-zinc-400 mb-6">{t('ops.chatDesc')}</p>

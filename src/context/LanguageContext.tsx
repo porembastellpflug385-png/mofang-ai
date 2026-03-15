@@ -19,7 +19,6 @@ const translations = {
       vision: "Vision",
       partners: "Partners",
       init: "Initialize",
-      admin: "Admin",
       home: "Home"
     },
     hero: {
@@ -92,7 +91,7 @@ const translations = {
       v1_title: "Ambient Intelligence",
       v1_desc: "The agent operates seamlessly in the background, observing context and offering solutions before you even ask.",
       v2_title: "Frictionless Creation",
-      v2_desc: "Go from thought to execution in seconds. Speak your intent, and watch complex systems build themselves.",
+      v2_desc: "Go from thought to execution in minutes. Speak your intent, and watch complex systems build themselves.",
       v3_title: "Hyper-Personalization",
       v3_desc: "An AI that adapts to your unique workflow, learning your preferences, tone, and strategic goals over time."
     },
@@ -106,9 +105,8 @@ const translations = {
       company: "Company or team",
       placeholder: "Enter your transmission address (Email)",
       message: "What do you want to build or automate?",
-      button: "Send Secure Brief",
+      button: "Request Access Protocol",
       sandbox: "Open support console",
-      admin: "Open admin console",
       secure: "Encrypted channel. 256-bit secure connection.",
       success: "Message sent. The operations team has been notified.",
       error: "Send failed. Please check your SMTP settings and try again.",
@@ -167,7 +165,6 @@ const translations = {
       vision: "未来愿景",
       partners: "合作伙伴",
       init: "系统初始化",
-      admin: "管理后台",
       home: "返回首页"
     },
     hero: {
@@ -240,7 +237,7 @@ const translations = {
       v1_title: "环境智能",
       v1_desc: "智能体在后台无缝运行，观察上下文并在您提出要求之前主动提供解决方案。",
       v2_title: "无摩擦创造",
-      v2_desc: "在几秒钟内从想法走向执行。说出您的意图，看着复杂的系统自行构建。",
+      v2_desc: "在几分钟内从想法走向执行。说出您的意图，看着复杂的系统自行构建。",
       v3_title: "超级个性化",
       v3_desc: "一个适应您独特工作流的 AI，随着时间的推移不断学习您的偏好、语气和战略目标。"
     },
@@ -254,9 +251,8 @@ const translations = {
       company: "公司或团队",
       placeholder: "输入您的传输地址 (电子邮件)",
       message: "请描述您希望搭建的系统、场景或需求",
-      button: "发送加密需求",
+      button: "请求访问协议",
       sandbox: "打开支持控制台",
-      admin: "打开管理后台",
       secure: "加密通道。256 位安全连接。",
       success: "消息已发送，运营邮箱已收到通知。",
       error: "发送失败，请检查 SMTP 配置后重试。",

@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Inbox, LogOut, Mail, RefreshCcw, Upload, Video } from 'lucide-react';
+import { Inbox, LogOut, Mail, RefreshCcw, Sparkles, Upload, Video } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import AdminLoginPanel from './AdminLoginPanel';
 import SmartChatWidget from './SmartChatWidget';
@@ -13,6 +13,7 @@ type AssetItem = {
   url: string;
   createdAt: string;
   size: number;
+  storage?: string;
 };
 
 type InboxItem = {
@@ -22,6 +23,8 @@ type InboxItem = {
   email?: string;
   message: string;
   createdAt: string;
+  needsHuman?: boolean;
+  summary?: string;
 };
 
 export default function OperationsConsole() {
@@ -34,6 +37,7 @@ export default function OperationsConsole() {
   const [mailState, setMailState] = useState('');
   const [authState, setAuthState] = useState('');
   const [storageMode, setStorageMode] = useState<'local' | 's3'>('local');
+  const [analysisByAsset, setAnalysisByAsset] = useState<Record<string, string>>({});
   const [mailForm, setMailForm] = useState({
     to: '',
     subject: '',
@@ -122,6 +126,23 @@ export default function OperationsConsole() {
     }
   };
 
+  const handleAnalyze = async (assetId: string) => {
+    setAnalysisByAsset((prev) => ({ ...prev, [assetId]: '分析中...' }));
+    const response = await adminFetch('/api/admin/analyze-image', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ assetId }),
+    });
+
+    const result = (await response.json()) as { ok: boolean; analysis?: string; message?: string };
+    setAnalysisByAsset((prev) => ({
+      ...prev,
+      [assetId]: result.ok ? result.analysis || '分析完成。' : result.message || '分析失败。',
+    }));
+  };
+
   return (
     <section id="ops-console" className="relative py-12 md:py-20 px-4 md:px-6">
       <div className="mx-auto max-w-6xl">
@@ -191,10 +212,26 @@ export default function OperationsConsole() {
               <div className="mt-8 grid gap-3 md:grid-cols-2">
                 {assets.length ? (
                   assets.map((asset) => (
-                    <a key={asset.id} href={asset.url} target="_blank" rel="noreferrer" className="rounded-2xl border border-white/10 bg-black/30 px-4 py-4 hover:border-cyan-500/30 transition-colors">
-                      <p className="truncate font-medium text-white">{asset.originalName}</p>
-                      <p className="mt-2 text-sm text-zinc-500">{asset.mimeType}</p>
-                    </a>
+                    <div key={asset.id} className="rounded-2xl border border-white/10 bg-black/30 px-4 py-4 hover:border-cyan-500/30 transition-colors">
+                      <a href={asset.url} target="_blank" rel="noreferrer" className="block">
+                        <p className="truncate font-medium text-white">{asset.originalName}</p>
+                        <p className="mt-2 text-sm text-zinc-500">{asset.mimeType}</p>
+                      </a>
+                      {asset.mimeType.startsWith('image/') ? (
+                        <>
+                          <button
+                            onClick={() => void handleAnalyze(asset.id)}
+                            className="mt-4 inline-flex items-center gap-2 rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-3 py-2 text-sm text-cyan-200 hover:bg-cyan-500/15 transition-colors"
+                          >
+                            <Sparkles className="w-4 h-4" />
+                            图片分析
+                          </button>
+                          {analysisByAsset[asset.id] ? (
+                            <p className="mt-3 text-sm leading-6 text-zinc-300">{analysisByAsset[asset.id]}</p>
+                          ) : null}
+                        </>
+                      ) : null}
+                    </div>
                   ))
                 ) : (
                   <p className="text-sm text-zinc-500">{t('ops.uploadEmpty')}</p>
@@ -258,12 +295,14 @@ export default function OperationsConsole() {
               <div className="space-y-3 max-h-[28rem] overflow-auto pr-1">
                 {inbox.length ? (
                   inbox.map((item) => (
-                    <div key={item.id} className="rounded-2xl border border-white/10 bg-black/30 px-4 py-4">
+                    <div key={item.id} className={`rounded-2xl border px-4 py-4 ${item.needsHuman ? 'border-amber-400/40 bg-amber-500/10' : 'border-white/10 bg-black/30'}`}>
                       <div className="flex items-center justify-between gap-3 text-sm">
                         <p className="font-medium text-white">{item.name || item.email || item.type}</p>
                         <span className="text-zinc-500">{new Date(item.createdAt).toLocaleString()}</span>
                       </div>
+                      {item.needsHuman ? <p className="mt-2 text-xs font-medium tracking-[0.2em] text-amber-300 uppercase">Human Requested</p> : null}
                       {item.email ? <p className="mt-1 text-sm text-cyan-300">{item.email}</p> : null}
+                      {item.summary ? <p className="mt-2 text-sm text-zinc-400">{item.summary}</p> : null}
                       <p className="mt-3 text-zinc-300 leading-6">{item.message}</p>
                     </div>
                   ))

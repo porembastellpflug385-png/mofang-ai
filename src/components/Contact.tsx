@@ -1,6 +1,6 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { Bot, Mail, SendHorizonal, Shield } from 'lucide-react';
+import { Fingerprint, SendHorizonal } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import SmartChatWidget from './SmartChatWidget';
 
@@ -67,9 +67,9 @@ export default function Contact() {
           viewport={{ once: true }}
           className="glass-panel rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 border border-white/10"
         >
-          <div className="w-18 h-18 mb-8 flex justify-center">
+          <div className="mb-8 flex justify-center">
             <div className="w-20 h-20 rounded-full bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 shadow-[0_0_40px_rgba(34,211,238,0.12)]">
-              <Mail className="w-10 h-10 text-cyan-300" />
+              <Fingerprint className="w-10 h-10 text-cyan-300" />
             </div>
           </div>
           <div className="text-center max-w-2xl mx-auto">
@@ -112,10 +112,6 @@ export default function Contact() {
               {t('contact.button')}
               <SendHorizonal className="w-4 h-4" />
             </button>
-            <a href="#/admin" className="w-full glass text-cyan-400 font-medium rounded-2xl px-6 py-4 hover:bg-white/5 transition-colors flex items-center justify-center gap-2 cursor-pointer border border-cyan-500/20">
-              <Shield className="w-4 h-4" />
-              {t('contact.admin')}
-            </a>
           </form>
 
           <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-3 text-xs font-mono">
@@ -128,31 +124,7 @@ export default function Contact() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="space-y-6"
         >
-          <div className="glass-panel rounded-[2rem] p-6 md:p-8">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                <Bot className="w-6 h-6 text-cyan-300" />
-              </div>
-              <div>
-                <p className="text-sm uppercase tracking-[0.3em] text-zinc-500">{t('contact.assistantBadge')}</p>
-                <h3 className="text-2xl font-semibold">{t('contact.assistantTitle')}</h3>
-              </div>
-            </div>
-            <p className="text-zinc-400 leading-7">{t('contact.assistantDesc')}</p>
-            <div className="mt-8 space-y-4 text-sm">
-              <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 px-5 py-4 text-cyan-50">
-                {t('contact.assistantFeature1')}
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-zinc-300">
-                {t('contact.assistantFeature2')}
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-zinc-300">
-                {t('contact.assistantFeature3')}
-              </div>
-            </div>
-          </div>
           <SmartChatWidget />
         </motion.div>
       </div>
