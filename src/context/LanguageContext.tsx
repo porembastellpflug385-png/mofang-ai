@@ -18,7 +18,9 @@ const translations = {
       ecosystem: "Creator Hub",
       vision: "Vision",
       partners: "Partners",
-      init: "Initialize"
+      init: "Initialize",
+      admin: "Admin",
+      home: "Home"
     },
     hero: {
       title1: "Intelligence,",
@@ -106,6 +108,7 @@ const translations = {
       message: "What do you want to build or automate?",
       button: "Send Secure Brief",
       sandbox: "Open support console",
+      admin: "Open admin console",
       secure: "Encrypted channel. 256-bit secure connection.",
       success: "Message sent. The operations team has been notified.",
       error: "Send failed. Please check your SMTP settings and try again.",
@@ -163,7 +166,9 @@ const translations = {
       ecosystem: "创作者生态",
       vision: "未来愿景",
       partners: "合作伙伴",
-      init: "系统初始化"
+      init: "系统初始化",
+      admin: "管理后台",
+      home: "返回首页"
     },
     hero: {
       title1: "智能，",
@@ -251,6 +256,7 @@ const translations = {
       message: "请描述您希望搭建的系统、场景或需求",
       button: "发送加密需求",
       sandbox: "打开支持控制台",
+      admin: "打开管理后台",
       secure: "加密通道。256 位安全连接。",
       success: "消息已发送，运营邮箱已收到通知。",
       error: "发送失败，请检查 SMTP 配置后重试。",

@@ -123,7 +123,7 @@ export default function OperationsConsole() {
   };
 
   return (
-    <section id="ops-console" className="relative py-28 px-6">
+    <section id="ops-console" className="relative py-12 md:py-20 px-4 md:px-6">
       <div className="mx-auto max-w-6xl">
         <div className="mb-10">
           <p className="text-sm uppercase tracking-[0.4em] text-cyan-400/70">{t('ops.eyebrow')}</p>
@@ -239,7 +239,9 @@ export default function OperationsConsole() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="space-y-6">
-            <SmartChatWidget onNewMessage={loadDashboard} />
+            <div className="hidden xl:block">
+              <SmartChatWidget onNewMessage={loadDashboard} />
+            </div>
 
             <div className="glass-panel rounded-[2rem] p-8">
               <div className="flex items-center justify-between gap-4 mb-4">

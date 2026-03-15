@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { Bot, Sparkles } from 'lucide-react';
+import { Bot, SendHorizonal, Sparkles } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 type ChatItem = {
@@ -7,7 +7,7 @@ type ChatItem = {
   content: string;
 };
 
-export default function SmartChatWidget({ onNewMessage }: { onNewMessage: () => Promise<void> | void }) {
+export default function SmartChatWidget({ onNewMessage }: { onNewMessage?: () => Promise<void> | void }) {
   const { t } = useLanguage();
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
@@ -52,7 +52,7 @@ export default function SmartChatWidget({ onNewMessage }: { onNewMessage: () => 
 
       setConversationId(result.conversationId);
       setMessages((prev) => [...prev, { role: 'assistant', content: result.reply }]);
-      await onNewMessage();
+      await onNewMessage?.();
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -67,14 +67,14 @@ export default function SmartChatWidget({ onNewMessage }: { onNewMessage: () => 
   };
 
   return (
-    <div className="glass-panel rounded-[2rem] p-8">
+    <div className="glass-panel rounded-[2rem] p-6 md:p-8">
       <div className="flex items-center gap-3 mb-3">
         <Bot className="w-5 h-5 text-cyan-300" />
         <h3 className="text-2xl font-semibold">{t('ops.chatTitle')}</h3>
       </div>
       <p className="text-zinc-400 mb-6">{t('ops.chatDesc')}</p>
 
-      <div className="space-y-3 rounded-[1.5rem] border border-white/10 bg-black/30 p-4 h-[24rem] overflow-auto">
+      <div className="space-y-3 rounded-[1.5rem] border border-white/10 bg-black/30 p-4 h-[24rem] md:h-[26rem] overflow-auto">
         {messages.map((item, index) => (
           <div
             key={`${item.role}-${index}`}
@@ -96,8 +96,9 @@ export default function SmartChatWidget({ onNewMessage }: { onNewMessage: () => 
           placeholder={t('ops.chatPlaceholder')}
           className="flex-1 bg-black/50 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-cyan-500/50 transition-colors"
         />
-        <button disabled={sending} className="rounded-2xl bg-white text-black px-5 py-4 font-medium hover:bg-zinc-200 transition-colors disabled:opacity-60">
-          <Sparkles className="w-4 h-4" />
+        <button disabled={sending} className="rounded-2xl bg-white text-black px-5 py-4 font-medium hover:bg-zinc-200 transition-colors disabled:opacity-60 inline-flex items-center justify-center gap-2 min-w-[88px]">
+          <SendHorizonal className="w-4 h-4" />
+          <span className="hidden sm:inline">{t('ops.chatButton')}</span>
         </button>
       </form>
     </div>
